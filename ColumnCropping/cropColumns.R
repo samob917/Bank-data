@@ -13,8 +13,6 @@ if (!file.exists("pages")) {
 }
 split_pdf("1993data.pdf", output_directory = "pages")
 file.remove("pages/doc_data.txt")
-test <- image_read("pg16.png")
-print(image_info(test))
 pages <- list.files("pages")
 for (i in 1:length(pages)) {
     # read in image
