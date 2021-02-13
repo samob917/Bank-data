@@ -11,4 +11,5 @@ General outline
 Details
 
 1) Read image files into R
-	> Original file format 
+	> Original file format is PDF
+	> Convert to PNG
