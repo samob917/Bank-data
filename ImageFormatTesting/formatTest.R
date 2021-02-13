@@ -1,11 +1,20 @@
+#install.packages("pdftools")
+#install.packages("magick")
+#install.packages("tesseract")
 library(pdftools)
 library(magick)
 library(tesseract)
 
-# put the paths to the test files in lines 8, 17, 28
+
+########################################################################################
+#  Functions import, crop, and perform OCR on images of various formats. Functions are
+#    called in system.time(), which prints the time taken to complete the function call.
+#    Converting PDFs to PNGs before importing seems most efficient
+########################################################################################
+
 
 testPDF <- function(density = 300) {
-    img <- image_read_pdf("formats/testPDF.pdf", density = density)
+    img <- image_read_pdf("ImageFormatTesting/formats/testPDF.pdf", density = density)
     width <- image_info(img)[2]
     height <- image_info(img)[3]
     crop_geo <- paste0(width/2, 'x', height/2, '+', width/4, '+', height/4)
@@ -14,7 +23,7 @@ testPDF <- function(density = 300) {
 }
 
 testPDFmulti <- function(density = 300) {
-    img <- image_read_pdf("formats/testPDFmulti.pdf", density = density)
+    img <- image_read_pdf("ImageFormatTesting/formats/testPDFmulti.pdf", density = density)
     for (page in 1:length(img)) {
         width <- image_info(img)[page, 2]
         height <- image_info(img)[page, 3]
@@ -25,17 +34,18 @@ testPDFmulti <- function(density = 300) {
 }
 
 testPDFtoPNG <- function() {
-    pngName <- pdf_convert("formats/testPDF.pdf", verbose = FALSE)
+    pngName <- pdf_convert("ImageFormatTesting/formats/testPDF.pdf", verbose = FALSE)
     img <- image_read(pngName)
     width <- image_info(img)[2]
     height <- image_info(img)[3]
     crop_geo <- paste0(width/2, 'x', height/2, '+', width/4, '+', height/4)
     cropped <- image_crop(img, crop_geo)
     text <- ocr(cropped, engine = tesseract("eng"))
+    file.remove(pngName)
 }
 
 testPDFtoPNGmulti <- function() {
-    pngName <- pdf_convert("formats/testPDFmulti.pdf", verbose = FALSE)
+    pngName <- pdf_convert("ImageFormatTesting/formats/testPDFmulti.pdf", verbose = FALSE)
     img <- image_read(pngName)
     for (pageNum in 1:length(img)) {
         width <- image_info(img)[pageNum, 2]
@@ -44,10 +54,11 @@ testPDFtoPNGmulti <- function() {
         cropped <- image_crop(img[pageNum], crop_geo)
         text <- ocr(cropped, engine = tesseract("eng"))
     }
+    file.remove(pngName)
 }
 
 testJPG <- function() {
-    img <- image_read("formats/testJPG.jpg")
+    img <- image_read("ImageFormatTesting/formats/testJPG.jpg")
     width <- image_info(img)[2]
     height <- image_info(img)[3]
     crop_geo <- paste0(width/2, 'x', height/2, '+', width/4, '+', height/4)
@@ -56,9 +67,9 @@ testJPG <- function() {
 }
 
 testJPGmulti <- function() {
-    pages <- list.files("formats/testJPGmulti")
+    pages <- list.files("ImageFormatTesting/formats/testJPGmulti")
     for (page in pages) {
-        img <- image_read(paste0("formats/testJPGmulti/", page))
+        img <- image_read(paste0("ImageFormatTesting/formats/testJPGmulti/", page))
         width <- image_info(img)[2]
         height <- image_info(img)[3]
         crop_geo <- paste0(width/2, 'x', height/2, '+', width/4, '+', height/4)
@@ -82,6 +93,6 @@ print(system.time(testPDFtoPNGmulti()))
 print("JPG Multi ------------------------")
 print(system.time(testJPGmulti()))
 
-print()
+print("--------------------------------------")
 print("converting PDF->PNG is most efficient")
 
