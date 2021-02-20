@@ -33,7 +33,7 @@ testPDFmulti <- function(density = 300) {
     }
 }
 
-testPDFtoPNG <- function() {
+testPDFtoPNG <- function() {                                    # dpi is density, default is 72
     pngName <- pdf_convert("ImageFormatTesting/formats/testPDF.pdf", verbose = FALSE, dpi = 120)
     img <- image_read(pngName)
     width <- image_info(img)[2]
@@ -41,8 +41,8 @@ testPDFtoPNG <- function() {
     crop_geo <- paste0(width/2, 'x', height/2, '+', width/4, '+', height/4)
     cropped <- image_crop(img, crop_geo)
     text <- ocr(cropped, engine = tesseract("eng"))
-    print(image_info(img))
-    print(text)
+    #print(image_info(img))
+    #print(text)
     image_write(cropped, path = paste0("ImageFormatTesting/cropped.pdf"), format = "pdf")
     file.remove(pngName)
 }
@@ -90,12 +90,12 @@ print("PDFtoPNG ------------------------")
 print(system.time(testPDFtoPNG()))
 print("JPG ----------------------------")
 print(system.time(testJPG()))
-#print("PDF Multi --------------------------")
-#print(system.time(testPDFmulti()))
-#print("PDFtoPNG Multi --------------------")
-#print(system.time(testPDFtoPNGmulti()))
-#print("JPG Multi ------------------------")
-#print(system.time(testJPGmulti()))
+print("PDF Multi --------------------------")
+print(system.time(testPDFmulti()))
+print("PDFtoPNG Multi --------------------")
+print(system.time(testPDFtoPNGmulti()))
+print("JPG Multi ------------------------")
+print(system.time(testJPGmulti()))
 
 print("--------------------------------------")
 print("converting PDF->PNG is most efficient")
