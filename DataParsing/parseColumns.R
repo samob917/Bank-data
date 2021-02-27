@@ -15,8 +15,8 @@ col_widths <- c(1800, 740, 425, 580, 465, 585)
 
 img <- image_read_pdf("DataParsing/testPDF.pdf", density = 600)
 width <- image_info(img)[2]
-height <- image_info(img)[3]
-crop_geo <- paste0(width - 391, 'x', height - 1559, '+', 390, '+', 880) # crop geometry (type '?image_crop' for details)
+height <- image_info(img)[3]                 # would usually be 1559
+crop_geo <- paste0(width - 391, 'x', height - 4950, '+', 380, '+', 880) # crop geometry (type '?image_crop' for details)
 cropped <- image_crop(img, crop_geo)
 width <- image_info(cropped)[2] # reset width and height for cropped page
 height <- image_info(cropped)[3]
@@ -28,13 +28,29 @@ for (j in 1:length(col_widths)) {
     image_write(column, path = paste0("DataParsing/col", j, ".pdf"), format = "pdf")
 }
 
-print(columns[1])
-col1 = strsplit(columns[1], '\n')
-print(col1)
+
 # TODO
 # Create dataframe with the 6 columns of strings, just to see them side by side
 # will help in making sure columns are kept in alignment when we delete rows
+greatestLength <- 0
+for (i in 1:length(col_widths)) {
+    len <- length(strsplit(columns[i], '\n')[[1]])
+    print(paste0(i, ": ", len))
+    if (len > greatestLength) {
+        greatestLength <- len
+    }
+}
+stringData <- data.frame(Temp = 1:greatestLength)
+for (i in 1:length(col_widths)) {
+    col <- strsplit(columns[i], '\n')[[1]]
+    if (length(col) < greatestLength) {
+        col <- c(col, rep('#', greatestLength - length(col)))
+    }
+    stringData[paste0("Col", i)] <- col
+}
+stringData <- stringData[-1]
 
+print(stringData)
 
 "
 create a dataframe to store data
