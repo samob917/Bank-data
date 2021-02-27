@@ -28,13 +28,32 @@ for (j in 1:length(col_widths)) {
     image_write(column, path = paste0("DataParsing/col", j, ".pdf"), format = "pdf")
 }
 
+splitColumns <- strsplit(columns, '\n') # list of vectors containing split column data
 
-# TODO
-# Create dataframe with the 6 columns of strings, just to see them side by side
-# will help in making sure columns are kept in alignment when we delete rows
+# extract and identify county, delete those rows from col1
+indexOfParen <- grep("(", splitColumns[[1]], fixed = TRUE)
+county <- strsplit(splitColumns[[1]][indexOfParen], " ")[[1]][1]
+print(county)  # put this in appropriate place in final dataframe!!
+deleteRows <- c(rep(FALSE, 4), rep(TRUE, length(splitColumns[[1]]) - 4))
+splitColumns[[1]] <- splitColumns[[1]][deleteRows]
+
+# delete unneccessary whitespace data
+for (i in 1:length(col_widths)) {
+    col <- splitColumns[[i]]
+    for (j in 1:length(col)) {
+        whiteSpaces <- col == ""
+    }
+    if (i == 1) {
+        print(whiteSpaces) 
+        print(length(whiteSpaces))
+    }
+    splitColumns[[i]] <- splitColumns[[i]][!whiteSpaces]
+}
+
+# all column data vectors need to have same length before putting in dataframe
 greatestLength <- 0
 for (i in 1:length(col_widths)) {
-    len <- length(strsplit(columns[i], '\n')[[1]])
+    len <- length(splitColumns[[i]])
     print(paste0(i, ": ", len))
     if (len > greatestLength) {
         greatestLength <- len
@@ -42,7 +61,7 @@ for (i in 1:length(col_widths)) {
 }
 stringData <- data.frame(Temp = 1:greatestLength)
 for (i in 1:length(col_widths)) {
-    col <- strsplit(columns[i], '\n')[[1]]
+    col = splitColumns[[i]]
     if (length(col) < greatestLength) {
         col <- c(col, rep('#', greatestLength - length(col)))
     }
@@ -51,6 +70,8 @@ for (i in 1:length(col_widths)) {
 stringData <- stringData[-1]
 
 print(stringData)
+
+
 
 "
 create a dataframe to store data
@@ -66,11 +87,8 @@ if found:
     find the next set of parenthesis (to show where this county data ends)
     delete row above and below parenthesis
     pull county name from line with parenthesis in it, fill in dataframe
-    
-
-
-
 
 
 "
+
 
