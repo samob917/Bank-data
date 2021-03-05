@@ -98,5 +98,5 @@ print("JPG Multi ------------------------")
 print(system.time(testJPGmulti()))
 
 print("--------------------------------------")
-print("converting PDF->PNG is most efficient")
+# print("converting PDF->PNG is most efficient")
 
