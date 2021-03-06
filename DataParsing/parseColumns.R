@@ -101,6 +101,23 @@ if found:
     delete row above and below parenthesis
     pull county name from line with parenthesis in it, fill in dataframe
 
+final dataframe: year  county  bank name  branch name   zipcode   IPC Deposits   All other deposits   Total deposits
+
+TO DO
+
+1) Data cleaning - write a new script that takes in a dataframe and cleans it
+    - Iterate through last 3 columns, identify periods and change them to commas
+    - Change o's to 0s
+    - Possibly flagging unrecognized characters?
+
+2) Create final dataframe, populate with year, county, etc
+
+3) Write code to differentiate banks and branches (can check zip code column for letters or numbers).
+   Once you've identified a row containing bank info, put it in separate dataframe
+   
+4) Create new R script to process page that has a county break
+
+
 
 "
 
