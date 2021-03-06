@@ -7,7 +7,7 @@ library(tesseract)
 
 ########################################################################################
 #  Script to brainstorm/test procedure for parsing ocr text and putting data in a dataframe
-#  Imports 1 page, crops into columns, reads columns with OCR, and parses data
+#  Imports testPDF, crops into columns, reads columns with OCR, and parses data
 #    
 ########################################################################################
 
@@ -105,17 +105,17 @@ final dataframe: year  county  bank name  branch name   zipcode   IPC Deposits  
 
 TO DO
 
-1) Data cleaning - write a new script that takes in a dataframe and cleans it
+1) Data cleaning - write a new script that takes in a dataframe and cleans it (Sam)
     - Iterate through last 3 columns, identify periods and change them to commas
     - Change o's to 0s
     - Possibly flagging unrecognized characters?
 
 2) Create final dataframe, populate with year, county, etc
 
-3) Write code to differentiate banks and branches (can check zip code column for letters or numbers).
+3) Write code to differentiate banks and branches (can check zip code column for letters or numbers)  (Roma)
    Once you've identified a row containing bank info, put it in separate dataframe
    
-4) Create new R script to process page that has a county break
+4) Create new R script to process page that has a county break (Casey)
 
 
 
