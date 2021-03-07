@@ -11,29 +11,35 @@ library(tesseract)
 #  testPDF2 contains a county break and summary stats in the middle of a page
 ########################################################################################
 
-col_widths <- c(1800, 740, 425, 580, 465, 585)    # dimensions for cropping
+col_widths <- c(1760, 740, 425, 580, 465, 585)    # dimensions for cropping
 columns <- vector("character", 6)                 # will hold OCR-extracted text for each column
+
+if (!file.exists("DataParsing/testPDF2cols")) { # create a folder to hold crops for this page
+    dir.create("DataParsing/testPDF2cols")
+}
 
 img <- image_read_pdf("DataParsing/testPDF2.pdf", density = 600)
 width <- image_info(img)[2]
-height <- image_info(img)[3]                 # would usually be 1559
-crop_geo <- paste0(width - 391, 'x', height - 4950, '+', 380, '+', 880) # crop geometry (type '?image_crop' for details)
+height <- image_info(img)[3]                 # would usually be 1560
+crop_geo <- paste0(width - 390, 'x', height - 2000, '+', 390, '+', 880) # crop geometry (type '?image_crop' for details)
 cropped <- image_crop(img, crop_geo)
-image_write(cropped, path = paste0("DataParsing/cropped.pdf"), format = "pdf") # saved cropped page to folder
+image_write(cropped, path = "DataParsing/testPDF2cols/cropped.pdf", format = "pdf") # saved cropped page to folder
 width <- image_info(cropped)[2] # reset width and height for cropped page
 height <- image_info(cropped)[3]
 for (j in 1:length(col_widths)) {
     geo <- paste0(col_widths[j], 'x', height , '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
     column <- image_crop(cropped, geo)
     columns[j] <- ocr(column, engine = tesseract("eng"))
-    # image_write(column, path = paste0("DataParsing/col", j, ".pdf"), format = "pdf")
+    image_write(column, path = paste0("DataParsing/testPDF2cols/col", j, ".pdf"), format = "pdf")
 }
 
 splitColumns <- strsplit(columns, '\n')         # list of vectors containing split column data
 splitColumnsOrig <- splitColumns                # will keep track of how data originally looked
 
-# extract and identify county, delete those rows from col1
+# extract and identify county, delete those rows from col1 - assumes there is a county header
 indexOfParen <- grep("(", splitColumns[[1]], fixed = TRUE)
+print(splitColumns[[1]])
+print(indexOfParen)
 county <- strsplit(splitColumns[[1]][indexOfParen], " ")[[1]][1]
 print(county)                 # put this in appropriate place in final dataframe!!
 deleteRows <- c(rep(FALSE, 4), rep(TRUE, length(splitColumns[[1]]) - 4))

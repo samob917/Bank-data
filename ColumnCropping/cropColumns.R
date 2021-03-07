@@ -18,7 +18,7 @@ for (page in 1:length(image)) {   # for each page in the PDF
     # INITIAL CROP
     width <- image_info(image)[page, 2]
     height <- image_info(image)[page, 3]
-    crop_geo <- paste0(width - 391, 'x', height - 1559, '+', 390, '+', 880) # crop geometry (type '?image_crop' for details)
+    crop_geo <- paste0(width - 390, 'x', height - 1560, '+', 390, '+', 880) # crop geometry (type '?image_crop' for details)
     cropped <- image_crop(image[page], crop_geo)
     if (!file.exists(paste0("ColumnCropping/Page", page))) { # create a folder to hold crops for this page
         dir.create(paste0("ColumnCropping/Page", page))
