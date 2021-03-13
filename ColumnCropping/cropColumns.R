@@ -12,7 +12,7 @@ library(magick)
 
 col_widths <- c(1800, 740, 425, 580, 465, 585) # numeric vector storing pixel widths for each column
 
-image <- image_read_pdf("ColumnCropping/1993data.pdf", density = 600) # read in PDF
+image <- image_read_pdf("ColumnCropping/1993B1_1-7.pdf", density = 600) # read in PDF
 print(image_info(image))
 for (page in 1:length(image)) {   # for each page in the PDF
     # INITIAL CROP
