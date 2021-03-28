@@ -35,7 +35,7 @@ for (j in 1:length(col_pct)) {
     col_widths[j] <- col_pct[j] * width
     # print(col_widths)
     if (j == length(col_pct)) {
-        geo <- paste0(width - sum(col_widths[1:j-1]), 'x', height, '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
+        geo <- paste0(width - sum(col_widths[1:j-1]) - 100, 'x', height, '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
     } else {
         geo <- paste0(col_widths[j], 'x', height, '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
     }
