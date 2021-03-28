@@ -5,8 +5,6 @@ library(pdftools)
 library(magick)
 library(tesseract)
 
-# TODO write code to crop further edge!
-
 ########################################################################################
 #  Script containing cropPage function, which performs smart border cropping on any page
 #  to call in another file:   source("cropPage.R)

@@ -11,7 +11,13 @@ library(tesseract)
 #  testPDF2 contains a county break and summary stats in the middle of a page
 ########################################################################################
 
-col_widths <- c(1760, 740, 425, 580, 465, 585)    # dimensions for cropping
+source("ColumnCropping/cropPage.R")
+
+pageNum <- 12
+
+# stores percentage that each column should take up
+col_pct <- c(0.36530, 0.15720, 0.09054, 0.12356, 0.09906, 0.04261)
+
 columns <- vector("character", 6)                 # will hold OCR-extracted text for each column
 
 if (!file.exists("DataParsing/testPDF2cols")) { # create a folder to hold crops for this page
@@ -19,15 +25,20 @@ if (!file.exists("DataParsing/testPDF2cols")) { # create a folder to hold crops 
 }
 
 img <- image_read_pdf("DataParsing/testPDF2.pdf", density = 600)
-width <- image_info(img)[2]
-height <- image_info(img)[3]                 # would usually be 1560
-crop_geo <- paste0(width - 390, 'x', height - 2000, '+', 390, '+', 880) # crop geometry (type '?image_crop' for details)
-cropped <- image_crop(img, crop_geo)
-image_write(cropped, path = "DataParsing/testPDF2cols/cropped.pdf", format = "pdf") # saved cropped page to folder
-width <- image_info(cropped)[2] # reset width and height for cropped page
-height <- image_info(cropped)[3]
-for (j in 1:length(col_widths)) {
-    geo <- paste0(col_widths[j], 'x', height , '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
+cropPageReturns <- cropPage(img, pageNum)
+cropped <- cropPageReturns[[1]]
+image_write(cropped, path = paste0("DataParsing/testPDF2cols/cropped.pdf"), format = "pdf") # saved cropped page to folder
+width <- as.numeric(image_info(cropped)[2]) # reset width and height for cropped page
+height <- as.numeric(image_info(cropped)[3])
+col_widths <- c(0, 0, 0, 0, 0, 0) # numeric vector to store pixel widths for each column
+for (j in 1:length(col_pct)) {
+    col_widths[j] <- col_pct[j] * width
+    # print(col_widths)
+    if (j == length(col_pct)) {
+        geo <- paste0(width - sum(col_widths[1:j-1]) - 100, 'x', height, '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
+    } else {
+        geo <- paste0(col_widths[j], 'x', height, '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
+    }
     column <- image_crop(cropped, geo)
     columns[j] <- ocr(column, engine = tesseract("eng"))
     image_write(column, path = paste0("DataParsing/testPDF2cols/col", j, ".pdf"), format = "pdf")
@@ -38,11 +49,14 @@ splitColumnsOrig <- splitColumns                # will keep track of how data or
 
 # extract and identify county, delete those rows from col1 - assumes there is a county header
 indexOfParen <- grep("(", splitColumns[[1]], fixed = TRUE)
-print(splitColumns[[1]])
-print(indexOfParen)
+#print(splitColumns[[1]])
+#print(indexOfParen)
 county <- strsplit(splitColumns[[1]][indexOfParen], " ")[[1]][1]
 print(county)                 # put this in appropriate place in final dataframe!!
-deleteRows <- c(rep(FALSE, 4), rep(TRUE, length(splitColumns[[1]]) - 4))
+deleteRows <- c(rep(TRUE, length(splitColumns[[1]])))
+deleteRows[indexOfParen] <- FALSE
+deleteRows[indexOfParen + 1] <- FALSE
+deleteRows[indexOfParen - 1] <- FALSE
 splitColumns[[1]] <- splitColumns[[1]][deleteRows]
 
 # delete unneccessary whitespace data
@@ -52,6 +66,24 @@ for (i in 1:length(col_widths)) {
         whiteSpaces <- col == ""
     }
     splitColumns[[i]] <- splitColumns[[i]][!whiteSpaces]
+}
+
+# identify and extract county totals table
+# different numbers of rows will need to be deleted from different columns!
+indexOfTable <- grep("COUNTY TOTALS", splitColumns[[1]], fixed = TRUE)
+print(indexOfTable)
+for (j in 1:length(col_pct)) {
+    deleteRows <- c(rep(TRUE, length(splitColumns[[j]])))
+    deleteRows[indexOfTable] <- FALSE
+    deleteRows[indexOfTable + 1] <- FALSE
+    deleteRows[indexOfTable + 2] <- FALSE
+    deleteRows[indexOfTable + 3] <- FALSE
+    deleteRows[indexOfTable + 4] <- FALSE
+    if (j == 1 | j == 4) {
+        deleteRows[indexOfTable + 5] <- FALSE
+    }
+    print(deleteRows)
+    splitColumns[[j]] <- splitColumns[[j]][deleteRows]
 }
 
 # all column data vectors need to have same length before putting in dataframe
