@@ -10,39 +10,42 @@ library(tesseract)
 #  Imports testPDF2, crops into columns, reads columns with OCR, and parses data
 #  testPDF2 contains a county break and summary stats in the middle of a page
 ########################################################################################
+# 
+# source("ColumnCropping/cropPage.R")
+# 
+# pageNum <- 12
+# 
+# # stores percentage that each column should take up
+# col_pct <- c(0.36530, 0.15720, 0.09054, 0.12356, 0.09906, 0.04261)
+# 
+# columns <- vector("character", 6)                 # will hold OCR-extracted text for each column
+# 
+# if (!file.exists("DataParsing/testPDF2cols")) { # create a folder to hold crops for this page
+#     dir.create("DataParsing/testPDF2cols")
+# }
+# 
+# img <- image_read_pdf("DataParsing/testPDF2.pdf", density = 600)
+# cropPageReturns <- cropPage(img, pageNum)
+# cropped <- cropPageReturns[[1]]
+# image_write(cropped, path = paste0("DataParsing/testPDF2cols/cropped.pdf"), format = "pdf") # saved cropped page to folder
+# width <- as.numeric(image_info(cropped)[2]) # reset width and height for cropped page
+# height <- as.numeric(image_info(cropped)[3])
+# col_widths <- c(0, 0, 0, 0, 0, 0) # numeric vector to store pixel widths for each column
+# for (j in 1:length(col_pct)) {
+#     col_widths[j] <- col_pct[j] * width
+#     # print(col_widths)
+#     if (j == length(col_pct)) {
+#         geo <- paste0(width - sum(col_widths[1:j-1]) - 100, 'x', height, '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
+#     } else {
+#         geo <- paste0(col_widths[j], 'x', height, '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
+#     }
+#     column <- image_crop(cropped, geo)
+#     columns[j] <- ocr(column, engine = tesseract("eng"))
+#     image_write(column, path = paste0("DataParsing/testPDF2cols/col", j, ".pdf"), format = "pdf")
+# }
 
-source("ColumnCropping/cropPage.R")
-
-pageNum <- 12
-
-# stores percentage that each column should take up
-col_pct <- c(0.36530, 0.15720, 0.09054, 0.12356, 0.09906, 0.04261)
-
-columns <- vector("character", 6)                 # will hold OCR-extracted text for each column
-
-if (!file.exists("DataParsing/testPDF2cols")) { # create a folder to hold crops for this page
-    dir.create("DataParsing/testPDF2cols")
-}
-
-img <- image_read_pdf("DataParsing/testPDF2.pdf", density = 600)
-cropPageReturns <- cropPage(img, pageNum)
-cropped <- cropPageReturns[[1]]
-image_write(cropped, path = paste0("DataParsing/testPDF2cols/cropped.pdf"), format = "pdf") # saved cropped page to folder
-width <- as.numeric(image_info(cropped)[2]) # reset width and height for cropped page
-height <- as.numeric(image_info(cropped)[3])
-col_widths <- c(0, 0, 0, 0, 0, 0) # numeric vector to store pixel widths for each column
-for (j in 1:length(col_pct)) {
-    col_widths[j] <- col_pct[j] * width
-    # print(col_widths)
-    if (j == length(col_pct)) {
-        geo <- paste0(width - sum(col_widths[1:j-1]) - 100, 'x', height, '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
-    } else {
-        geo <- paste0(col_widths[j], 'x', height, '+', sum(col_widths[1:j]) - col_widths[j], '+', 0)
-    }
-    column <- image_crop(cropped, geo)
-    columns[j] <- ocr(column, engine = tesseract("eng"))
-    image_write(column, path = paste0("DataParsing/testPDF2cols/col", j, ".pdf"), format = "pdf")
-}
+source("code/ColumnCropping/cropColumns.R")
+columns <- cropColumns("1993B1_1.pdf")
 
 splitColumns <- strsplit(columns, '\n')         # list of vectors containing split column data
 splitColumnsOrig <- splitColumns                # will keep track of how data originally looked
