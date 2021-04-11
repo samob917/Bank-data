@@ -1,0 +1,13 @@
+for column 1 
+	if at least three *** appears
+		store the second row after *** to county
+		delete *** and two rows after this row
+		store the data between two sets of *** into a new dataframe with the name county	
+	
+	(alternatively, can identify (   ) instead of ***)
+
+
+for county
+	remove the \n at the end
+	remove the last 6 lines at the end becuase they are summary statistics
+		
