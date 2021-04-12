@@ -6,33 +6,29 @@ library(magick)
 library(tesseract)
 
 ########################################################################################
-#  Script to brainstorm/test procedure for parsing ocr text and putting data in a dataframe
-#  Imports testPDF2, crops into columns, reads columns with OCR, and parses data
-#  testPDF2 contains a county break and summary stats in the middle of a page
+#  Given a list of character vectors containing the data in each column, processes
+#  and cleans the data, and returns a dataframe that can be appended to the final
 ########################################################################################
-# 
 
-#source("code/ColumnCropping/cropColumns.R")
-#columns <- cropColumns("1993B1_1.pdf"
+source("code/Helper/Helper.R")
 
-#Only applies on first column
+NUM_COLUMNS <- 6
+FIRST_NUMERIC_COL <- 4
+LAST_NUMERIC_COL <- 6
 
-
-dataProcessing <- function(splitColumns, origCounty, state) {
+dataProcessing <- function(splitColumns, origCounty, state, origBank) {
     county <- origCounty
     
     # delete unneccessary whitespace data
-    for (i in 1:6) {
+    for (i in 1:NUM_COLUMNS) {
         col <- splitColumns[[i]]
-        for (j in 1:length(col)) {
-            whiteSpaces <- col == ""
-        }
+        whiteSpaces <- col == ""
         splitColumns[[i]] <- splitColumns[[i]][!whiteSpaces]
     }
-
-    findCounty <- findCounty(splitColumns[[1]])
     
-    if (findCounty[[1]] != -1) {
+    # determine whether or not a new county begins on this page
+    findCounty <- findCounty(splitColumns[[1]])
+    if (findCounty[[1]] != -1) { # if there is a new county, delete ****** from first row
         deleteRows <- c(rep(TRUE, length(splitColumns[[1]])))
         deleteRows[findCounty[[1]]] <- FALSE
         deleteRows[findCounty[[1]] + 1] <- FALSE
@@ -42,13 +38,11 @@ dataProcessing <- function(splitColumns, origCounty, state) {
     }
     
     
-    # identify and extract county totals table
-    # different numbers of rows will need to be deleted from different columns!
-    
-    indexOfTable <- findTotals(splitColumns[[1]])
-    
-    if (indexOfTable != -1) {
-        for (j in 1:6) {
+    # determine whether or not there is a county change on this page
+    # meaning data at the top belong to one county, and data at the bottom belong to another
+    indexOfTable <- findCountyTotals(splitColumns[[1]])
+    if (indexOfTable != -1) {   # if there is a county change, delete county table from all rows
+        for (j in 1:NUM_COLUMNS) {
             deleteRows <- c(rep(TRUE, length(splitColumns[[j]])))
             deleteRows[indexOfTable] <- FALSE
             deleteRows[indexOfTable + 1] <- FALSE
@@ -58,47 +52,52 @@ dataProcessing <- function(splitColumns, origCounty, state) {
             if (j == 1 | j == 4) {
                 deleteRows[indexOfTable + 5] <- FALSE
             }
-            print(deleteRows)
             splitColumns[[j]] <- splitColumns[[j]][deleteRows]
         }
-    }
+    } # all rows above indexOfTable need origCounty, all rows below need county
     
     
     
     # all column data vectors need to have same length before putting in dataframe
     greatestLength <- 0
-    greatestLengthOrig <- 0
-    for (i in 1:length(col_widths)) {        # identify the column with the greatest length
+    for (i in 1:NUM_COLUMNS) {        # identify the column with the greatest length
         len <- length(splitColumns[[i]])
-        # print(paste0(i, ": ", len))
         if (len > greatestLength) {
             greatestLength <- len
         }
     }
-    stringData <- data.frame(Temp = 1:greatestLength)
-    #stringDataOrig <- data.frame(Temp = 1:greatestLengthOrig)
-    for (i in 1:length(col_widths)) {
+    stringData <- data.frame(Temp = 1:greatestLength)  # put data into a dataframe!
+    for (i in 1:NUM_COLUMNS) {
         col = splitColumns[[i]]
-        #colOrig = splitColumnsOrig[[i]] 
         if (length(col) < greatestLength) {
-            col <- c(col, rep('#', greatestLength - length(col))) # add '#' characters to fill in
+            col <- c(col, rep('#', greatestLength - length(col))) # add '#' characters to fill in any short columns
         }
-        # if (length(colOrig) < greatestLengthOrig) {
-        #     colOrig <- c(colOrig, rep('#', greatestLengthOrig - length(colOrig))) # add '#' characters to fill in
-        # }
         stringData[paste0("Col", i)] <- col
-        #stringDataOrig[paste0("Col", i)] <- colOrig
     }
-    #stringData <- stringData[-1]
-    #stringDataOrig <- stringDataOrig[-1]
+    stringData <- stringData[-1]
+
+    # clean data - remove all periods/commas, replace all lone 'o' or 'O' with '0'
+    stringData <- cleanData(stringData, FIRST_NUMERIC_COL, LAST_NUMERIC_COL)
     
+    # need to convert last 3 columns from string to numeric?
     
+    # separating bank and branch names into different columns
+    stringData <- separateBanksAndBranches(stringData, origBank)
     
-    ##TODO: Make County and State Columns
+    # add and fill County and State columns
+    stringData <- cbind(data.frame("County" = c(rep(county, length(stringData$Bank)))), stringData)
+    
+    for (i in 1:indexOfTable) {
+        stringData$County[i] <- origCounty
+    }
+    print(stringData)
+    stringData <- cbind(data.frame("State" = c(rep(state, length(stringData$Bank)))), stringData)
+    print(stringData)
+    colnames(stringData) <- c("State", "County", "Bank", "Branch", "City", "ZIP", "IPC Deposits", "All Other Deposits", "Total Deposits")
+    
     return(stringData)
     
 }
-#print("------------------ Original Data --------------------")
-#print(stringDataOrig)
+
 #print("------------------ Cleaned Data --------------------")
 #print(stringData)

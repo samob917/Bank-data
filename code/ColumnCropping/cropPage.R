@@ -10,7 +10,6 @@ library(tesseract)
 ########################################################################################
 #  Script containing cropPage function, which performs smart border cropping on any page
 #  to call in another file:   source("cropPage.R)
-#    
 ########################################################################################
 
 #   Function to crop the data table out of the given page
@@ -55,7 +54,7 @@ cropPage <- function(img, page) {
         if (grepl(page, text, fixed = TRUE) == TRUE) {
             text = strsplit(text, "\n")[[1]][1] 
             state <- strsplit(text, " ")[[1]][2] 
-            print(paste0("State: ", state))
+            # print(paste0("State: ", state))
             break
         }
         cutFromBottom = cutFromBottom + 40
