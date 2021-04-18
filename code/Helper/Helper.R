@@ -60,26 +60,26 @@ separateBanksAndBranches <- function(stringData, origBank) {
         curIndex <- curIndex + 1
     }
     #assign the value of the bank name to each branch
-    curIndex <- 1
-    curBank <- origBank
-    for (i in stringData$Bank) {
-        if (is.na(i) == FALSE) {
-            curBank <- i
-        } else {
-            stringData$Bank[curIndex] <- curBank
-        }
-        curIndex <- curIndex + 1
-    }
+#    curIndex <- 1
+#    curBank <- origBank
+#    for (i in stringData$Bank) {
+#        if (is.na(i) == FALSE) {
+#            curBank <- i
+#        } else {
+#            stringData$Bank[curIndex] <- curBank
+#        }
+#        curIndex <- curIndex + 1
+#    }
     
     #remove bank names and only keep branch names in original first column
-    deleteRows <- c(rep(TRUE, length(stringData$Bank)))
-    count <- 1
-    for (i in 1:length(stringData$Bank)) {
-        if (grepl("MAIN OFFICE", stringData$Col1[i]) == FALSE & grepl("BRANCH", stringData$Col1[i]) == FALSE) {
-            deleteRows[i] <- FALSE
-        }
-    }
-    stringData <- stringData[deleteRows,]
+#    deleteRows <- c(rep(TRUE, length(stringData$Bank)))
+#    count <- 1
+#    for (i in 1:length(stringData$Bank)) {
+#        if (grepl("MAIN OFFICE", stringData$Col1[i]) == FALSE & grepl("BRANCH", stringData$Col1[i]) == FALSE) {
+#            deleteRows[i] <- FALSE
+#        }
+#    }
+#    stringData <- stringData[deleteRows,]
     colnames(stringData)[2] <- "Branch"
     return(stringData)
 }
