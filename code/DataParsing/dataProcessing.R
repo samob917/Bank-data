@@ -90,9 +90,9 @@ dataProcessing <- function(splitColumns, origCounty, state, origBank) {
     for (i in 1:indexOfTable) {
         stringData$County[i] <- origCounty
     }
-    print(stringData)
+    #print(stringData)
     stringData <- cbind(data.frame("State" = c(rep(state, length(stringData$Bank)))), stringData)
-    print(stringData)
+    #print(stringData)
     colnames(stringData) <- c("State", "County", "Bank", "Branch", "City", "ZIP", "IPC Deposits", "All Other Deposits", "Total Deposits")
     
     return(stringData)

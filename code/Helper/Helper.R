@@ -54,7 +54,7 @@ separateBanksAndBranches <- function(stringData, origBank) {
     stringData <- cbind("Bank" = c(rep(NA, length(stringData$Col1))), stringData)
     curIndex <- 1
     for (i in stringData$Col1) {
-        if (grepl("MAIN OFFICE", i) == FALSE & grepl("BRANCH",i) == FALSE) {
+        if (grepl("BANK", i) == TRUE | (grepl("MAIN OFFICE", i) == FALSE & grepl("BRANCH",i) == FALSE & grepl("FACILITY", i) == FALSE)) {
             stringData$Bank[curIndex] <- i    # copies bank name into new column
         }
         curIndex <- curIndex + 1

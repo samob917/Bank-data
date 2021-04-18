@@ -1,6 +1,11 @@
+#install.packages("tesseract")
+#install.packages("magick")
+#install.packages("pdftools")
+#install.packages("stringr")
 library(pdftools)
 library(magick)
 library(tesseract)
+library(stringr)
 
 ########################################################################################
 #  Main driver - extracts data from a multi-page PDF into a dataframe
@@ -29,9 +34,6 @@ main <- function(pdfName, firstPage, firstCounty) {
     for (page in 1:length(image)) {
         cropColumns <- cropColumns(image[page], pageNum)
         state <- cropColumns[[2]]
-        print(state)
-        print(class(state))
-        print("____________")
         columns <- cropColumns[[1]]
         
         splitColumns <- strsplit(columns, '\n')         # list of character vectors containing the entries of each column
