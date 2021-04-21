@@ -11,7 +11,13 @@ library(stringr)
 #  Main driver - extracts data from a multi-page PDF into a dataframe
 #  main function takes 3 arguments: path to PDF file, the page number of the first
 #  page in the file, and the name of the county of the first page in the file
+#
 #  IMPORTANT: ensure that working directory is Bank-data
+#
+#  TO RUN:
+#  source("/code/main.R")
+#  main("test/1993B1_1-7.pdf", 1, "Fairfield")
+#
 ########################################################################################
 
 # format of final dataframe:  
@@ -45,7 +51,7 @@ main <- function(pdfName, firstPage, firstCounty) {
     }
     
     # do the string columns need to be turned into numbers before we write to the csv, or does it not matter?
-    
-    write.csv(finalDF, "bankData.csv", row.names = FALSE)
+    fileName <- tail(strsplit(pdfName, '/')[[1]], n = 1)
+    write.csv(finalDF, paste0(fileName, "data.csv"), row.names = FALSE)
 }
 
