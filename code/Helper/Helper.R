@@ -4,17 +4,22 @@
 
 # Given the first column as a character vector, searches for the start of a new county
 # Returns a list containing:
-#   index of county change in column (or -1 if no new county)
-#   string containing the name of the new county
+#   vector of indexes of county change (or -1 if no new county)
+#   vector of strings containing the name of the new counties
 findCounty <- function(columnOne) {
-    county <- ""
+    counties <- vector(mode = "character")
     index <- -1
-    indexOfCounty <- grep("(", columnOne, fixed = TRUE)
-    if (length(indexOfCounty) != 0) {
-        county <- strsplit(columnOne[indexOfCounty], " ")[[1]][1]
-        index <- indexOfCounty
+    indexParen1 <- grep("(", columnOne, fixed = TRUE)
+    indexParen2 <- grep(")", columnOne, fixed = TRUE)
+    indexOfCounties <- intersect(indexParen1, indexParen2)
+    if (length(indexOfCounties) != 0) {
+        index <- indexOfCounties
+        split <- strsplit(columnOne[indexOfCounties], " ")
+        for (i in 1:length(indexOfCounties)) {
+            counties <- c(counties, split[[i]][1])
+        }
     }
-    r <- list(index, county)
+    r <- list(index, counties)
     return(r)
 }
 
@@ -27,6 +32,7 @@ findCountyTotals <- function(columnOne) {
     if (length(indexOfTotals) != 0) {
         index <- indexOfTotals
     }
+    
     return(index)
 }
 

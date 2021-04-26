@@ -38,6 +38,7 @@ main <- function(pdfName, firstPage, firstCounty) {
     
     # will iterate through each page, create a clean dataframe for it, and append it to final
     for (page in 1:length(image)) {
+        print(paste0("Processing page: ", page))
         cropColumns <- cropColumns(image[page], pageNum)
         state <- cropColumns[[2]]
         columns <- cropColumns[[1]]

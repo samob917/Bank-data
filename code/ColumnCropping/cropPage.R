@@ -52,8 +52,13 @@ cropPage <- function(img, page) {
         strip <- image_crop(croppedWatermark, strip_geo)
         text <- ocr(strip, engine = tesseract("eng"))
         if (grepl(page, text, fixed = TRUE) == TRUE) {
-            text = strsplit(text, "\n")[[1]][1] 
-            state <- strsplit(text, " ")[[1]][2] 
+            text <- strsplit(text, "\n")[[1]][1] 
+            words <- strsplit(text, " ")[[1]]
+            if (length(words) == 2) {
+                state <- words[2]
+            } else {
+                state <- paste0(words[2], words[3])
+            }
             # print(paste0("State: ", state))
             break
         }
