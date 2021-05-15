@@ -114,7 +114,7 @@ dataProcessing <- function(splitColumns, origCounty, state, origBank) {
     stringData <- cleanData(stringData, FIRST_NUMERIC_COL, LAST_NUMERIC_COL)
     
 
-    # separating bank and branch names into different columns
+    # separating bank and branch names into different columns - deletion part deactivated
     stringData <- separateBanksAndBranches(stringData, origBank)
     
     # add county column

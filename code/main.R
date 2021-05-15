@@ -15,7 +15,7 @@ library(stringr)
 #  IMPORTANT: ensure that working directory is Bank-data
 #
 #  TO RUN:
-#  source("/code/main.R")
+#  source("code/main.R")
 #  main("test/1993B1_1-7.pdf", 1, "Fairfield")
 #
 ########################################################################################
@@ -38,15 +38,26 @@ main <- function(pdfName, firstPage, firstCounty) {
     
     # will iterate through each page, create a clean dataframe for it, and append it to final
     for (page in 1:length(image)) {
-        print(paste0("Processing page: ", page))
+        print(paste0("Processing page ", pageNum))
         cropColumns <- cropColumns(image[page], pageNum)
         state <- cropColumns[[2]]
         columns <- cropColumns[[1]]
         
         splitColumns <- strsplit(columns, '\n')         # list of character vectors containing the entries of each column
         toAppend <- dataProcessing(splitColumns, county, state, bank)
-        county <- toAppend$County[length(toAppend$County) - 1]
-        bank <- toAppend$Bank[length(toAppend$Bank) - 1]
+        lastIndex <- nrow(toAppend)
+        county <- toAppend$County[lastIndex]
+        bank <- toAppend$Bank[lastIndex]
+        for (col in 1:ncol(toAppend)) {
+            lastVal <- toAppend[lastIndex, col]
+            if (!is.na(lastVal) & lastVal == "#") {
+                #print(paste0("probable data loss at page ", pageNum))
+                finalDF <- rbind(finalDF, toAppend)
+                fileName <- tail(strsplit(pdfName, '/')[[1]], n = 1)
+                write.csv(finalDF, paste0(fileName, "data.csv"), row.names = FALSE)
+                stop(paste0("probable data loss at page ", pageNum))
+            }
+        }
         finalDF <- rbind(finalDF, toAppend)
         pageNum <- pageNum + 1
     }

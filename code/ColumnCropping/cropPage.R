@@ -51,7 +51,7 @@ cropPage <- function(img, page) {
         strip_geo <- paste0(image_info(croppedWatermark)[2], 'x', 100, '+', 0, '+', image_info(croppedWatermark)[3] - cutFromBottom) # horizontal strip of height 100 from end-cutFromBottom
         strip <- image_crop(croppedWatermark, strip_geo)
         text <- ocr(strip, engine = tesseract("eng"))
-        if (grepl(page, text, fixed = TRUE) == TRUE) {
+        if (grepl(page, text, fixed = TRUE) == TRUE) { # found page number
             text <- strsplit(text, "\n")[[1]][1] 
             words <- strsplit(text, " ")[[1]]
             if (length(words) == 2) {
@@ -63,9 +63,17 @@ cropPage <- function(img, page) {
             break
         }
         cutFromBottom = cutFromBottom + 40
+        if (cutFromBottom > 800) {
+            print("WARNING: page number not detected, cropping failed")
+            break
+        }
     }
     crop_geo <- paste0(image_info(croppedWatermark)[2] - startX - 20, 'x', image_info(croppedWatermark)[3] - startY - cutFromBottom, '+', startX, '+', startY)
     finalCropped <- image_crop(croppedWatermark, crop_geo)
+    print(paste0("page dimensions: ", image_info(finalCropped)[2], "w x ", image_info(finalCropped)[3], "h"))
+    if (image_info(finalCropped)[3] < 3000) {
+        print("WARNING: cropped table unusually small, check for data loss")
+    }
     returns <- list(finalCropped, state)
     return(returns)
 }
