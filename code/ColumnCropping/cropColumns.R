@@ -24,6 +24,9 @@ cropColumns <- function(image, pageNum) {
         
     # INITIAL BORDER CROP using cropPage function
     cropPageReturns <- cropPage(image, pageNum)
+    if (is.null(cropPageReturns[[1]]) & is.null(cropPageReturns[[2]])) {
+        return(cropPageReturns) # return null list to indicate that cropping failed
+    }
     cropped <- cropPageReturns[[1]] # magick image of full cropped page
     returnList <- list(cropPageReturns[[2]]) # state for all data on this page
     # CROP BY COUNTY SUMMARY TABLES

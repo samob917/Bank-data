@@ -65,7 +65,7 @@ cropPage <- function(img, page) {
         cutFromBottom = cutFromBottom + 40
         if (cutFromBottom > 800) {
             print("WARNING: page number not detected, cropping failed")
-            break
+            return(list(NULL, NULL)) # return null list to indicate that cropping failed
         }
     }
     crop_geo <- paste0(image_info(croppedWatermark)[2] - startX - 20, 'x', image_info(croppedWatermark)[3] - startY - cutFromBottom, '+', startX, '+', startY)

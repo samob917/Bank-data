@@ -47,9 +47,13 @@ dataProcessing <- function(splitColumns, origCounty, state, origBank) {
     indexOfCounty <- intersect(indexParen1, indexParen2)
     if (length(indexOfCounty) != 0) {
         theoreticallyNewCountyLine <- strsplit(columnOne[indexOfCounty], " ")[[1]]
-        parenString <-theoreticallyNewCountyLine[grep("(", theoreticallyNewCountyLine, fixed = TRUE)]
+        indexOfParenString <- grep("(", theoreticallyNewCountyLine, fixed = TRUE)
+        parenString <- theoreticallyNewCountyLine[indexOfParenString] # edge case: tesseract reads County (003 )
+        if (grep(")", theoreticallyNewCountyLine, fixed = TRUE) == indexOfParenString + 1){
+            parenString <- paste0(parenString, theoreticallyNewCountyLine[indexOfParenString + 1])
+        }
         if (str_length(parenString) == 5) {
-            tokens <- length(theoreticallyNewCountyLine)
+            tokens <- indexOfParenString:length(theoreticallyNewCountyLine)
             county <- paste(theoreticallyNewCountyLine[-tokens], collapse = " ") # possibly need to join for multi-word counties?
             deleteRows <- c(rep(TRUE, length(columnOne)))
             deleteRows[indexOfCounty] <- FALSE
