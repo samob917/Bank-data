@@ -53,11 +53,12 @@ dataProcessing <- function(splitColumns, origCounty, state, origBank) {
             parenString <- paste0(parenString, theoreticallyNewCountyLine[indexOfParenString + 1])
         }
         if (str_length(parenString) == 5) {
+            print(paste0("length should be 5, deleting: ", parenString))
             tokens <- indexOfParenString:length(theoreticallyNewCountyLine)
             county <- paste(theoreticallyNewCountyLine[-tokens], collapse = " ") # possibly need to join for multi-word counties?
             deleteRows <- c(rep(TRUE, length(columnOne)))
             deleteRows[indexOfCounty] <- FALSE
-            deleteRows[indexOfCounty + 1] <- FALSE
+            deleteRows[indexOfCounty + 1] <- FALSE # indexOfCounty can be a vector, so this deletes all!
             deleteRows[indexOfCounty - 1] <- FALSE
             splitColumns[[1]] <- columnOne[deleteRows]
         }
@@ -90,10 +91,10 @@ dataProcessing <- function(splitColumns, origCounty, state, origBank) {
     stringData <- separateBanksAndBranches(stringData, origBank)
     
     # add and fill county column
-    stringData <- cbind(data.frame("County" = c(rep(county, nrow(stringData)))), stringData)
+    stringData <- cbind(data.frame("County" = rep(county, nrow(stringData))), stringData)
     
     # add and fill state column
-    stringData <- cbind(data.frame("State" = c(rep(state, nrow(stringData)))), stringData)
+    stringData <- cbind(data.frame("State" = rep(state, nrow(stringData))), stringData)
 
     colnames(stringData) <- c("State", "County", "Bank", "Branch", "City", "ZIP", "IPC Deposits", "All Other Deposits", "Total Deposits")
     
