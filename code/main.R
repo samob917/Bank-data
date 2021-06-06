@@ -79,7 +79,10 @@ main <- function(pdfName, firstPage, firstCounty) {
                     write.csv(finalDF, paste0("output/pg", firstPage, "-", pageNum, ".csv"), row.names = FALSE)
                     #stop(paste0("probable data loss at page ", pageNum))
                     print(paste0("<<< probable data loss at page ", pageNum, ", beginning new csv >>>"))
-                    firstPage <- pageNum + 1
+                    firstPage <- pageNum
+                    if (i == length(cropColumns)) {
+                        firstPage <- pageNum + 1
+                    }
                     finalDF <- data.frame(matrix(ncol = 10, nrow = 0))
                     colnames(finalDF) <- c("PageNum", "State", "County", "Bank", "Branch", "City", "ZIP", "IPC Deposits", "All Other Deposits", "Total Deposits")
                     break

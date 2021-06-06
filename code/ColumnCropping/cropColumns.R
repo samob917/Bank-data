@@ -29,8 +29,10 @@ cropColumns <- function(image, pageNum) {
         return(cropPageReturns) # return null list to indicate that cropping failed
     }
     cropped <- cropPageReturns[[1]] # magick image of full cropped page
-    # image_write(cropped, path = paste0(pageNum, "cropped.pdf"), format = "pdf")
     returnList <- list(cropPageReturns[[2]]) # state for all data on this page
+    # REPLACE ^^ WITH VV FOR SINGLE-PAGE MANUAL FIXES
+    #cropped <- image_read_pdf("test/1993B1_18.pdf", density = 600)
+    #returnList <- list("CONNECTICUT")
     # CROP BY COUNTY SUMMARY TABLES                                  question: also want to handle state summary tables?
     imgList <- findAndCrop(cropped, "COUNTY TOTALS")
     if (length(imgList) == 1 & is.null(imgList[[1]])) { # fix this smol issue
