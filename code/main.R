@@ -1,8 +1,6 @@
 #install.packages("tesseract")
 #install.packages("magick")
-#install.packages("pdftools")
 #install.packages("stringr")
-library(pdftools)
 library(magick)
 library(tesseract)
 library(stringr)

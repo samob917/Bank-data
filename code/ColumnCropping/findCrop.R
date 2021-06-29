@@ -1,9 +1,3 @@
-#install.packages("tesseract")
-#install.packages("magick")
-library(tesseract)
-library(magick)
-
-
 ########################################################################################
 #  Script containing findAndCrop function, which takes in a border-cropped page and splits
 #  the page into horizontal chunks based on a phrase to search for

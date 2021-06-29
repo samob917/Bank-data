@@ -1,11 +1,3 @@
-#install.packages("pdftools")
-#install.packages("magick")
-#install.packages("tesseract")
-library(pdftools)
-library(magick)
-library(tesseract)
-library(stringr)
-
 ########################################################################################
 #  Given a list of character vectors containing the data in each column, processes
 #  and cleans the data, and returns a dataframe that can be appended to the final

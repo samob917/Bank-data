@@ -1,8 +1,3 @@
-#install.packages("tesseract")
-#install.packages("magick")
-library(tesseract)
-library(magick)
-
 ########################################################################################
 #  Given the magick image file of 1 page and the page number, crops out column using 
 #  predetermined column widths
@@ -24,15 +19,15 @@ cropColumns <- function(image, pageNum) {
     col_pct <- c(0.3863, 0.1608, 0.0906, 0.1202, 0.1127, 0.1158)
         
     # INITIAL BORDER CROP using cropPage function
-    cropPageReturns <- cropPage(image, pageNum)
-    if (is.null(cropPageReturns[[1]]) & is.null(cropPageReturns[[2]])) {
-        return(cropPageReturns) # return null list to indicate that cropping failed
-    }
-    cropped <- cropPageReturns[[1]] # magick image of full cropped page
-    returnList <- list(cropPageReturns[[2]]) # state for all data on this page
+    #cropPageReturns <- cropPage(image, pageNum)
+    #if (is.null(cropPageReturns[[1]]) & is.null(cropPageReturns[[2]])) {
+    #    return(cropPageReturns) # return null list to indicate that cropping failed
+    #}
+    #cropped <- cropPageReturns[[1]] # magick image of full cropped page
+    #returnList <- list(cropPageReturns[[2]]) # state for all data on this page
     # REPLACE ^^ WITH VV FOR SINGLE-PAGE MANUAL FIXES
-    #cropped <- image_read_pdf("test/1993B1_18.pdf", density = 600)
-    #returnList <- list("CONNECTICUT")
+    cropped <- image_read_pdf("test/1993B1_81.pdf", density = 600)
+    returnList <- list("MASSACHUSETTS")
     # CROP BY COUNTY SUMMARY TABLES                                  question: also want to handle state summary tables?
     imgList <- findAndCrop(cropped, "COUNTY TOTALS")
     if (length(imgList) == 1 & is.null(imgList[[1]])) { # fix this smol issue
